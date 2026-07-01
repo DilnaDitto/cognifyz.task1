@@ -1,0 +1,78 @@
+<!-- views/task2.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 2: Advanced Form & Validation</title>
+</head>
+<!-- Step 1: Utilizing inline styles to make a clean layout -->
+<body style="font-family: Arial, sans-serif; background-color: #eef2f3; padding: 40px; display: flex; justify-content: center; gap: 20px;">
+
+    <!-- Left Side: The Form -->
+    <div style="background: white; padding: 30px; border-radius: 10px; width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <h2 style="color: #333; margin-top: 0;">Registration Form</h2>
+        
+        <!-- Error Banner for Client-Side validation alerts -->
+        <div id="errorBanner" style="display: none; background-color: #ffebee; color: #c62828; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;"></div>
+
+        <!-- 
+          Step 2: Use inline JavaScript via 'onsubmit' 
+          If validateForm() returns false, the form will NOT submit to the server.
+        -->
+        <form action="/submit-task2" method="POST" onsubmit="return validateForm()">
+            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Full Name:</label>
+            <input type="text" id="name" name="name" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
+
+            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Email:</label>
+            <input type="email" id="email" name="email" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
+
+            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Age:</label>
+            <input type="number" id="age" name="age" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
+
+            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Password:</label>
+            <input type="password" id="password" name="password" placeholder="At least 6 characters" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
+
+            <button type="submit" style="width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold;">Register User</button>
+        </form>
+        <br>
+        <a href="/submissions" style="color: #007bff; text-decoration: none; font-size: 14px;">📊 View All Stored Users</a>
+    </div>
+
+    <!-- Inline Client-Side JavaScript Validation -->
+    <script>
+        function validateForm() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const age = document.getElementById('age').value.trim();
+            const password = document.getElementById('password').value;
+            const errorBanner = document.getElementById('errorBanner');
+
+            errorBanner.style.display = "none";
+            errorBanner.innerText = "";
+
+            // Validation Checks
+            if (!name || !email || !age || !password) {
+                showError("All fields are required!");
+                return false;
+            }
+            if (parseInt(age) < 18) {
+                showError("You must be at least 18 years old.");
+                return false;
+            }
+            if (password.length < 6) {
+                showError("Password must be at least 6 characters long.");
+                return false;
+            }
+
+            return true; // Form is valid, allow submission
+        }
+
+        function showError(message) {
+            const errorBanner = document.getElementById('errorBanner');
+            errorBanner.innerText = message;
+            errorBanner.style.display = "block";
+        }
+    </script>
+</body>
+</html>

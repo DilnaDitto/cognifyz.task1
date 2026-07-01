@@ -1,44 +1,57 @@
 // server.js
-
-// 1. Import the Express module
 const express = require('express');
+const path = require('path');
 const app = express();
 const PORT = 3000;
 
-// 2. Configure the server
-// Tell Express to use EJS as the view engine (for Server-Side Rendering)
 app.set('view engine', 'ejs');
-const path = require('path');
-// This line tells Express: "Look for the views folder exactly where THIS server.js file is located"
 app.set('views', path.join(__dirname, 'views'));
-
-// Middleware to parse data submitted from HTML forms
-// This makes form data available inside 'req.body'
 app.use(express.urlencoded({ extended: true }));
 
-// 3. Create Server-Side Endpoints
+// --- TASK 2 FEATURE: Step 4: Temporary server-side storage array ---
+const temporaryUserStorage = [];
 
-// Endpoint 1: A GET request to load the home page (the form)
-app.get('/', (req, res) => {
-    // This looks inside the 'views' folder for 'index.ejs' and renders it
-    res.render('index'); 
+// Existing Task 1 route (Keep intact)
+app.get('/', (req, res) => { res.render('index'); });
+app.post('/submit-form', (req, res) => { res.render('success', { name: req.body.name, email: req.body.email }); });
+
+
+// ================== TASK 2 ROUTES ==================
+
+// 1. Render Task 2 form page
+app.get('/task2', (req, res) => {
+    res.render('task2');
 });
 
-// Endpoint 2: A POST request to handle the form submission
-app.post('/submit-form', (req, res) => {
-    // Extract the data sent from the form input fields
-    const userName = req.body.name;
-    const userEmail = req.body.email;
+// 2. Handle Task 2 Submission with Server-Side Validation
+app.post('/submit-task2', (req, res) => {
+    const { name, email, age, password } = req.body;
 
-    // Use Server-Side Rendering to generate the success page.
-    // We pass the extracted data to the 'success.ejs' template.
-    res.render('success', { 
-        name: userName, 
-        email: userEmail 
-    });
+    // Step 3: Implement server-side validation rules
+    if (!name || !email || !age || !password) {
+        return res.status(400).send("<h1>Validation Failed: All fields are required!</h1>");
+    }
+    if (parseInt(age) < 18) {
+        return res.status(400).send("<h1>Validation Failed: Age must be 18 or above!</h1>");
+    }
+    if (password.length < 6) {
+        return res.status(400).send("<h1>Validation Failed: Password is too short!</h1>");
+    }
+
+    // If validations pass, store the data in our array
+    temporaryUserStorage.push({ name, email, age });
+
+    // Redirect user to the dashboard to view storage array
+    res.redirect('/submissions');
 });
 
-// 4. Start the server
+// 3. Render Dashboard list
+app.get('/submissions', (req, res) => {
+    // Pass the storage array down to the EJS template
+    res.render('submissions', { users: temporaryUserStorage });
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
 });
